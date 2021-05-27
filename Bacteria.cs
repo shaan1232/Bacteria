@@ -5,16 +5,21 @@ using System.Windows.Forms;
 
 namespace Bacteria
 {
+    public static class Globals
+    {
+        public const int numPlayers = 3; // leave it at 3 for now, its hard coded for 3. Change it later
+        public const int windowWidth = 1300;
+        public const int windowHeight = 900;
+        public const int boardColumns = 30;
+        public const int boardRows = 30;
+
+    }
 
 
     class Game
     {
 
-        public const int windowWidth = 1300;
-        public const int windowHeight = 900;
-        public const int boardColumns = 15;
-        public const int boardRows = 15;
-        public static int[,] board = new int[boardColumns, boardRows];
+        public static int[,] board = new int[Globals.boardColumns, Globals.boardRows];
 
 
         public static void runGame(int numPlayers)
@@ -24,22 +29,71 @@ namespace Bacteria
             Application.SetCompatibleTextRenderingDefault(false);
             //    Application.Size(windowWidth, windowHeight);
             Application.Run(new MyForm());
-            Form1.Size = new Size(windowWidth, windowHeight);
+            //  Form1.Size = new Size(windowWidth, windowHeight);
         }
 
-        public static void initPlayers(int numPlayers)
+        public static void initPlayers()
         {
             int a = 0, b = a, c = a, d = c, e = c;
 
             Random rand = new Random();
 
-            for (int i = 0; i < boardColumns; i++)
+            for (int i = 0; i < Globals.boardColumns; i++)
             {
-                for (int j = 0; j < boardRows; j++)
+                for (int j = 0; j < Globals.boardRows; j++)
                 {
-                    board[i, j] = rand.Next(numPlayers);
+                    board[i, j] = rand.Next(Globals.numPlayers);
                 }
             }
+        }
+
+        public static void turn()
+        {
+            // look at all the neighbours. Depending on the amount of neighbours you have the stronger your defense
+            // etc i own left and right and top, enemy owns bottom, 3/4 chance I take this square.
+
+            // only have to account for 4 possibilities
+
+            int left = -1;
+            int top = -1;
+            int bottom = -1;
+            int right = -1;
+
+            for (int i = 0; i < dotsX; i++)
+            {
+                for (int j = 0; j < dotsY; j++)
+                {
+                    // top left, only have to account for bottom and right
+                    if (i == 0 && j == 0)
+                    {
+                        bottom = board[i][j + 1];
+                        right = board[i + 1][j];
+                    }
+                    // top right
+                    else if (i == boardColumns - 1 && j == 0)
+                    {
+                        bottom = board[i][j + 1];
+                        left = board[i - 1][j];
+                    }
+                    // bottom left
+                    else if (i == 0 && j == boardRows - 1)
+                    {
+                        top = board[i][j - 1];
+                        right = board[i + 1][j];
+                    }
+                    // bottom right
+                    else if (i == boardColumns - 1 && j == boardRows - 1)
+                    {
+                        top = board[i][j - 1];
+                        left = board[i - 1][j];
+                    }
+
+
+
+
+                }
+            }
+
         }
 
         public int[,] getBoard()
@@ -68,9 +122,8 @@ namespace Bacteria
                 Int32.TryParse(input, out numPlayers);
             }
             */
-            int numPlayers = 3;
 
-            runGame(numPlayers);
+            runGame();
 
         }
     }
@@ -86,12 +139,12 @@ namespace Bacteria
         green,
         blue
 };
-
+        public int[,] board; // = new board[Globals.boardColumns, Globals.boardRows];
         public MyForm()
         {
 
             Game game = new Game();
-            int[,] board = game.getBoard();
+            board = game.getBoard();
 
             //  for (int i =)
 
@@ -101,19 +154,41 @@ namespace Bacteria
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            int dotWidth = game.boardRows; // size of pixel width
-            int dotLength; // sizes of pixels dotLength
+            int dotsX = Globals.boardRows; // size of pixel width
+            int dotsY = Globals.boardColumns; // size of pixel heightsizes of pixels dotLength
 
             base.OnPaint(e);
 
             Graphics gfx = e.Graphics;
             Pen p = new Pen(myColors[1]);
             p.Color = myColors[1];
-            //  gfx.DrawRectangle(Pens.Black, 10f, 10f, 10f, 10f);
+
             gfx.DrawRectangle(Pens.Black, 10f, 50f, 20f, 20f);
             gfx.FillRectangle(Brushes.Red, 10f, 50f, 20f, 20f);
             gfx.DrawRectangle(Pens.Black, 30f, 50f, 20f, 20f);
             gfx.FillRectangle(Brushes.Blue, 30f, 50f, 20f, 20f);
+
+            for (int i = 0; i < dotsX; i++)
+            {
+                for (int j = 0; j < dotsY; j++)
+                {
+                    switch (board[i, j])
+                    {
+                        case 0:
+                            gfx.FillRectangle(Brushes.Red, 10 + j * dotsX, i * dotsY, dotsX, dotsY);
+                            break;
+
+                        case 1:
+                            gfx.FillRectangle(Brushes.Green, 10 + j * dotsX, i * dotsY, dotsX, dotsY);
+                            break;
+
+                        case 2:
+                            gfx.FillRectangle(Brushes.Yellow, 10 + j * dotsX, i * dotsY, dotsX, dotsY);
+                            break;
+                    }
+                    gfx.DrawRectangle(Pens.Black, 10 + j * dotsX, i * dotsY, dotsX, dotsY);
+                }
+            }
 
         }
     }
