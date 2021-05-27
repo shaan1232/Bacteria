@@ -22,9 +22,9 @@ namespace Bacteria
         public static int[,] board = new int[Globals.boardColumns, Globals.boardRows];
 
 
-        public static void runGame(int numPlayers)
+        public static void runGame()
         {
-            initPlayers(numPlayers);
+            initPlayers();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //    Application.Size(windowWidth, windowHeight);
@@ -59,36 +59,34 @@ namespace Bacteria
             int bottom = -1;
             int right = -1;
 
-            for (int i = 0; i < dotsX; i++)
+            for (int i = 0; i < Globals.boardColumns; i++)
             {
-                for (int j = 0; j < dotsY; j++)
+                for (int j = 0; j < Globals.boardRows; j++)
                 {
                     // top left, only have to account for bottom and right
                     if (i == 0 && j == 0)
                     {
-                        bottom = board[i][j + 1];
-                        right = board[i + 1][j];
+                        bottom = board[i, j + 1];
+                        right = board[i + 1, j];
                     }
                     // top right
-                    else if (i == boardColumns - 1 && j == 0)
+                    else if (i == Globals.boardColumns - 1 && j == 0)
                     {
-                        bottom = board[i][j + 1];
-                        left = board[i - 1][j];
+                        bottom = board[i, j + 1];
+                        left = board[i - 1, j];
                     }
                     // bottom left
-                    else if (i == 0 && j == boardRows - 1)
+                    else if (i == 0 && j == Globals.boardRows - 1)
                     {
-                        top = board[i][j - 1];
-                        right = board[i + 1][j];
+                        top = board[i, j - 1];
+                        right = board[i + 1, j];
                     }
                     // bottom right
-                    else if (i == boardColumns - 1 && j == boardRows - 1)
+                    else if (i == Globals.boardColumns - 1 && j == Globals.boardRows - 1)
                     {
-                        top = board[i][j - 1];
-                        left = board[i - 1][j];
+                        top = board[i, j - 1];
+                        left = board[i - 1, j];
                     }
-
-
 
 
                 }
